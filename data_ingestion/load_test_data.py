@@ -1,6 +1,8 @@
 from enums.image_info import ImageInfo
-from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tensorflow.keras.preprocessing import image_dataset_from_directory, image
 import os
+import tensorflow as tf
+import numpy as np
 
 
 class LoadTestData(object):
@@ -16,3 +18,9 @@ class LoadTestData(object):
             shuffle=True,
             batch_size=ImageInfo.BATCH_SIZE.value,
             image_size=ImageInfo.IMAGE_SIZE.value)
+
+    def image_predict(self, url):
+        image_load = image.load_img(url, target_size=ImageInfo.IMAGE_SIZE.value)
+        input_arr = image.img_to_array(image_load)
+        img_array = tf.expand_dims(input_arr, 0)  # Create a batc
+        return img_array

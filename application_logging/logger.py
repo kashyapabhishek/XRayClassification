@@ -12,4 +12,4 @@ class Logger(object):
         self.now = datetime.now()
         self.date = self.now.date()
         self.time = self.now.strftime("%H:%M:%S")
-        file_object.write(f'{str(self.date)} {self.time}   {log_message}')
+        file_object.write(f'{str(self.date)} {self.time}   {log_message} \n')

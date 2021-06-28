@@ -10,3 +10,5 @@ class ImageInfo(enum.Enum):
     IMAGE_SIZE = (224, 224)
     IMAGE_SHAPE = (224, 224, 3)
     EPOCHS = 10
+    TRAINING_LOG = 'logs/training.txt'
+    TEST_LOG = 'logs/test.txt'
