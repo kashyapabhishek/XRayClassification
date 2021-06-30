@@ -11,7 +11,6 @@ import tensorflow as tf
 import os
 from tensorflow.keras.layers.experimental import preprocessing
 from application_logging.logger import Logger
-import PIL
 
 
 class TransferLearning(object):
@@ -38,25 +37,37 @@ class TransferLearning(object):
         except Exception as e:
             self.logger.log(self.file_obj, f'Exception in autotune_model method class TransferLearning {e}')
 
-    def create_model(self):
+    def basic_layer(self):
         try:
             inputs = Input(shape=ImageInfo.IMAGE_SHAPE.value)
             data_augmentation = tf.keras.Sequential([
                 preprocessing.Rescaling(1. / 125)
             ])
-            x = data_augmentation(inputs)
-            x = mobilenet_v2.preprocess_input(x)
-            x = MobileNetV2(
-                input_shape=ImageInfo.IMAGE_SHAPE.value,
-                include_top=False,
-                weights='imagenet')(x)
-            x.trainable = True
+            return inputs, data_augmentation(inputs)
+        except Exception as e:
+            self.logger.log(self.file_obj, f'Exception in basic layer method class TransferLearning {e}')
+
+    def final_layer(self, x, inputs):
+        try:
             x = GlobalAveragePooling2D()(x)
             x = Dropout(0.2)(x)
             outputs = Dense(1)(x)
             self.model = tf.keras.Model(inputs, outputs)
         except Exception as e:
             self.logger.log(self.file_obj, f'Exception in create_model method class TransferLearning {e}')
+
+    def mobile_net(self, x):
+        try:
+            inputs, x = self.basic_layer()
+            mobilenet_v2.preprocess_input(x)
+            x = MobileNetV2(
+                input_shape=ImageInfo.IMAGE_SHAPE.value,
+                include_top=False,
+                weights='imagenet')(x)
+            x.trainable = True
+            self.final_layer(x, inputs)
+        except Exception as e:
+            self.logger.log(self.file_obj, f'Exception in mobile net layer method class TransferLearning {e}')
 
     def compile_model(self):
         try:
@@ -83,8 +94,8 @@ class TransferLearning(object):
             self.logger.log(self.file_obj, f'Training function started')
             self.autotune_model()
             self.logger.log(self.file_obj, f'autotune_model function complete')
-            self.create_model()
-            self.logger.log(self.file_obj, f'create_model function complete')
+            self.mobile_net()
+            self.logger.log(self.file_obj, f'mobile net function complete')
             self.compile_model()
             self.logger.log(self.file_obj, f'compile_model function complete')
             self.fit_model()
