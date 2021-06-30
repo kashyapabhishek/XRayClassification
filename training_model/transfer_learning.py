@@ -13,6 +13,7 @@ from tensorflow.keras.layers.experimental import preprocessing
 from application_logging.logger import Logger
 import PIL
 
+
 class TransferLearning(object):
 
     def __init__(self, file_obj=None):
@@ -115,5 +116,6 @@ class TransferLearning(object):
             predictions = self.model.predict(image)
             score = tf.nn.sigmoid(predictions[0])
             print(score)
+            return score
         except Exception as e:
             self.logger.log(self.file_obj, f'Exception in train method class TransferLearning {e}')
